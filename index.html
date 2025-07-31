@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Water Quality Monitor</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    canvas {
+      max-width: 100%;
+      margin-bottom: 40px;
+    }
+    h2 {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Real-Time Water Quality Data</h1>
+  <canvas id="tempChart"></canvas>
+  <canvas id="phChart"></canvas>
+  <canvas id="doChart"></canvas>
+
+  <script>
+    // TODO: Replace this config with your Firebase project config
+    const firebaseConfig = {
+  apiKey: "AIzaSyCmUpNSNZCumWTP4rVolqnOh3aSRtqra6I",
+  authDomain: "smart-monitoring-water-quality.firebaseapp.com",
+  databaseURL: "https://smart-monitoring-water-quality-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "smart-monitoring-water-quality",
+  storageBucket: "smart-monitoring-water-quality.firebasestorage.app",
+  messagingSenderId: "662631956791",
+  appId: "1:662631956791:web:dfcfbf17e07e3c97e41ab2",
+  measurementId: "G-DVBB1FJEXF"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const tempData = [];
+    const phData = [];
+    const doData = [];
+    const labels = [];
+
+    function createChart(ctxId, label, data, borderColor) {
+      return new Chart(document.getElementById(ctxId).getContext("2d"), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: label,
+              data: data,
+              fill: false,
+              borderColor: borderColor,
+              tension: 0.1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          animation: false,
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: "Timestamp"
+              }
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: label
+              }
+            }
+          }
+        }
+      });
+    }
+
+    const tempChart = createChart("tempChart", "Temperature (C)", tempData, "red");
+    const phChart = createChart("phChart", "pH", phData, "blue");
+    const doChart = createChart("doChart", "Dissolved Oxygen (mg/L)", doData, "green");
+
+    function updateCharts(timestamp, values) {
+      if (labels.length > 50) {
+        labels.shift();
+        tempData.shift();
+        phData.shift();
+        doData.shift();
+      }
+      labels.push(timestamp);
+      tempData.push(values.temp);
+      phData.push(values.ph);
+      doData.push(values.do);
+      tempChart.update();
+      phChart.update();
+      doChart.update();
+    }
+
+    db.ref("/aquaculture").on("child_added", snapshot => {
+      const timestamp = snapshot.key;
+      const values = snapshot.val();
+      updateCharts(timestamp, values);
+    });
+  </script>
+</body>
+</html>
