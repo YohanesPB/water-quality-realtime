@@ -35,7 +35,7 @@
 
     header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 10px;
     }
 
     h1 {
@@ -82,6 +82,14 @@
       display: none;
     }
 
+    .no-data-status {
+      color: var(--alert-color);
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      animation: blink 1s step-start 0s infinite;
+    }
+
     @keyframes blink {
       50% { opacity: 0; }
     }
@@ -104,6 +112,8 @@
     <h1>📈 Real-Time Water Quality on RAS</h1>
     <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
+
+  <div id="noDataStatus" class="no-data-status" style="display: none;">🚫 No data acquired</div>
 
   <div class="status-bar">
     <div class="latest-values" id="latestValues">
@@ -146,6 +156,8 @@
     const phData = [];
     const doData = [];
     const labels = [];
+
+    let dataReceived = false;
 
     function createChart(ctxId, label, data, borderColor) {
       return new Chart(document.getElementById(ctxId).getContext("2d"), {
@@ -201,6 +213,11 @@
     }
 
     function updateCharts(timestamp, values) {
+      if (!dataReceived) {
+        dataReceived = true;
+        document.getElementById("noDataStatus").style.display = "none";
+      }
+
       if (labels.length > 50) {
         labels.shift();
         tempData.shift();
@@ -235,6 +252,12 @@
       const values = snapshot.val();
       updateCharts(timestamp, values);
     });
+
+    setTimeout(() => {
+      if (!dataReceived) {
+        document.getElementById("noDataStatus").style.display = "block";
+      }
+    }, 10000);
 
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
