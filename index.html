@@ -94,12 +94,21 @@
       50% { opacity: 0; }
     }
 
+    .charts-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
     .chart-container {
       background: var(--card-bg);
       border-radius: 16px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
       padding: 20px;
-      margin-bottom: 30px;
+      flex: 1 1 300px;
+      max-width: 480px;
+      box-sizing: border-box;
     }
 
     canvas {
@@ -124,17 +133,19 @@
 
   <div id="alert" class="alert-message"></div>
 
-  <div class="chart-container">
-    <h2>🌡️ Temperature (°C)</h2>
-    <canvas id="tempChart"></canvas>
-  </div>
-  <div class="chart-container">
-    <h2>⚗️ pH Level</h2>
-    <canvas id="phChart"></canvas>
-  </div>
-  <div class="chart-container">
-    <h2>🫧 Dissolved Oxygen (mg/L)</h2>
-    <canvas id="doChart"></canvas>
+  <div class="charts-wrapper">
+    <div class="chart-container">
+      <h2>🌡️ Temperature (°C)</h2>
+      <canvas id="tempChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h2>⚗️ pH Level</h2>
+      <canvas id="phChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h2>🫧 Dissolved Oxygen (mg/L)</h2>
+      <canvas id="doChart"></canvas>
+    </div>
   </div>
 
   <script>
@@ -217,7 +228,7 @@
         typeof values.temp !== "undefined" &&
         typeof values.ph !== "undefined" &&
         typeof values.do !== "undefined";
-      
+
       if (!dataReceived) {
         dataReceived = true;
         document.getElementById("noDataStatus").style.display = "none";
