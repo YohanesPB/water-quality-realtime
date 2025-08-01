@@ -8,38 +8,73 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background-color: #f9f9f9;
+    :root {
+      --bg-color: #f0f4f8;
+      --card-bg: #ffffff;
+      --font-color: #333;
+      --accent-color: #0077cc;
     }
-    canvas {
-      max-width: 100%;
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 20px;
+      color: var(--font-color);
+    }
+
+    header {
+      text-align: center;
       margin-bottom: 40px;
     }
-    h2 {
-      margin-top: 40px;
+
+    h1 {
+      font-size: 2.5rem;
+      color: var(--accent-color);
+    }
+
+    .chart-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    canvas {
+      max-width: 100%;
     }
   </style>
 </head>
 <body>
-  <h1>Real-Time Water Quality Data</h1>
-  <canvas id="tempChart"></canvas>
-  <canvas id="phChart"></canvas>
-  <canvas id="doChart"></canvas>
+  <header>
+    <h1>📈 Real-Time Water Quality Data</h1>
+  </header>
+
+  <div class="chart-container">
+    <h2>🌡️ Temperature (°C)</h2>
+    <canvas id="tempChart"></canvas>
+  </div>
+  <div class="chart-container">
+    <h2>⚗️ pH Level</h2>
+    <canvas id="phChart"></canvas>
+  </div>
+  <div class="chart-container">
+    <h2>🫧 Dissolved Oxygen (mg/L)</h2>
+    <canvas id="doChart"></canvas>
+  </div>
 
   <script>
-    // TODO: Replace this config with your Firebase project config
     const firebaseConfig = {
-  apiKey: "AIzaSyCmUpNSNZCumWTP4rVolqnOh3aSRtqra6I",
-  authDomain: "smart-monitoring-water-quality.firebaseapp.com",
-  databaseURL: "https://smart-monitoring-water-quality-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "smart-monitoring-water-quality",
-  storageBucket: "smart-monitoring-water-quality.firebasestorage.app",
-  messagingSenderId: "662631956791",
-  appId: "1:662631956791:web:dfcfbf17e07e3c97e41ab2",
-  measurementId: "G-DVBB1FJEXF"
-};
+      apiKey: "AIzaSyCmUpNSNZCumWTP4rVolqnOh3aSRtqra6I",
+      authDomain: "smart-monitoring-water-quality.firebaseapp.com",
+      databaseURL: "https://smart-monitoring-water-quality-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "smart-monitoring-water-quality",
+      storageBucket: "smart-monitoring-water-quality.firebasestorage.app",
+      messagingSenderId: "662631956791",
+      appId: "1:662631956791:web:dfcfbf17e07e3c97e41ab2",
+      measurementId: "G-DVBB1FJEXF"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -60,7 +95,8 @@
               data: data,
               fill: false,
               borderColor: borderColor,
-              tension: 0.1
+              backgroundColor: borderColor,
+              tension: 0.3
             }
           ]
         },
@@ -87,9 +123,9 @@
       });
     }
 
-    const tempChart = createChart("tempChart", "Temperature (C)", tempData, "red");
-    const phChart = createChart("phChart", "pH", phData, "blue");
-    const doChart = createChart("doChart", "Dissolved Oxygen (mg/L)", doData, "green");
+    const tempChart = createChart("tempChart", "Temperature (°C)", tempData, "#ff4d4d");
+    const phChart = createChart("phChart", "pH", phData, "#1f77b4");
+    const doChart = createChart("doChart", "Dissolved Oxygen (mg/L)", doData, "#2ca02c");
 
     function updateCharts(timestamp, values) {
       if (labels.length > 50) {
