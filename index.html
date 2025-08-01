@@ -109,7 +109,7 @@
 </head>
 <body>
   <header>
-    <h1>📈 Real-Time Water Quality on RAS</h1>
+    <h1>📈 Real-Time Water Quality Data</h1>
     <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
@@ -213,9 +213,19 @@
     }
 
     function updateCharts(timestamp, values) {
+      const isDataValid =
+        typeof values.temp !== "undefined" &&
+        typeof values.ph !== "undefined" &&
+        typeof values.do !== "undefined";
+      
       if (!dataReceived) {
         dataReceived = true;
         document.getElementById("noDataStatus").style.display = "none";
+      }
+
+      if (!isDataValid) {
+        document.getElementById("noDataStatus").style.display = "block";
+        return;
       }
 
       if (labels.length > 50) {
@@ -266,4 +276,5 @@
   </script>
 </body>
 </html>
+
 
