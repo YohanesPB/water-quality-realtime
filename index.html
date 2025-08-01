@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Water Quality Monitor</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    :root {
+      --bg-color: #f0f4f8;
+      --card-bg: #ffffff;
+      --font-color: #333;
+      --accent-color: #0077cc;
+      --alert-color: #ff4d4d;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --font-color: #e0e0e0;
+      --accent-color: #4dabf7;
+      --alert-color: #ff6b6b;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 20px;
+      color: var(--font-color);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: var(--accent-color);
+    }
+
+    .toggle-theme {
+      margin-top: 10px;
+      cursor: pointer;
+      background: none;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 5px 12px;
+      border-radius: 8px;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+    }
+
+    .latest-values {
+      display: flex;
+      gap: 30px;
+      font-size: 1.2rem;
+    }
+
+    .alert-message {
+      background-color: var(--alert-color);
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      animation: blink 1s step-start 0s infinite;
+      display: none;
+    }
+
+    .no-data-status {
+      color: var(--alert-color);
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      animation: blink 1s step-start 0s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .charts-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .chart-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      flex: 1 1 300px;
+      max-width: 480px;
+      box-sizing: border-box;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📈 Real-Time Water Quality Data</h1>
+    <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark Mode</button>
+  </header>
+
+  <div id="noDataStatus" class="no-data-status" style="display: none;">🚫 No data acquired</div>
+
+  <div class="status-bar">
+    <div class="latest-values" id="latestValues">
+      ⏱️ Waiting for data...
+    </div>
+    <div id="status">🔄 Connecting...</div>
+  </div>
+
+  <div id="alert" class="alert-message"></div>
+
+  <div class="charts-wrapper">
+    <div class="chart-container">
+      <h2>🌡️ Temperature (°C)</h2>
+      <canvas id="tempChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h2>⚗️ pH Level</h2>
+      <canvas id="phChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h2>🫧 Dissolved Oxygen (mg/L)</h2>
+      <canvas id="doChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCmUpNSNZCumWTP4rVolqnOh3aSRtqra6I",
+      authDomain: "smart-monitoring-water-quality.firebaseapp.com",
+      databaseURL: "https://smart-monitoring-water-quality-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "smart-monitoring-water-quality",
+      storageBucket: "smart-monitoring-water-quality.firebasestorage.app",
+      messagingSenderId: "662631956791",
+      appId: "1:662631956791:web:dfcfbf17e07e3c97e41ab2",
+      measurementId: "G-DVBB1FJEXF"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const tempData = [];
+    const phData = [];
+    const doData = [];
+    const labels = [];
+
+    let dataReceived = false;
+
+    function createChart(ctxId, label, data, borderColor) {
+      return new Chart(document.getElementById(ctxId).getContext("2d"), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: label,
+              data: data,
+              fill: false,
+              borderColor: borderColor,
+              backgroundColor: borderColor,
+              tension: 0.3,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          animation: false,
+          interaction: {
+            mode: 'nearest',
+            intersect: false
+          },
+          plugins: {
+            tooltip: {
+              enabled: true,
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: ${context.formattedValue}`;
+                },
+                title: function(context) {
+                  return `🕒 ${context[0].label}`;
+                }
+              }
+            },
+            zoom: {
+              pan: {
+                enabled: true,
+                mode: 'x'
+              },
+              zoom: {
+                wheel: {
+                  enabled: true
+                },
+                pinch: {
+                  enabled: true
+                },
+                mode: 'x'
+              }
+            }
+          },
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: "Timestamp"
+              }
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: label
+              }
+            }
+          }
+        }
+      });
+    }
+
+    const tempChart = createChart("tempChart", "Temperature (°C)", tempData, "#ff4d4d");
+    const phChart = createChart("phChart", "pH", phData, "#1f77b4");
+    const doChart = createChart("doChart", "Dissolved Oxygen (mg/L)", doData, "#2ca02c");
+
+    function showAlert(message) {
+      const alertBox = document.getElementById("alert");
+      if (message) {
+        alertBox.textContent = message;
+        alertBox.style.display = "block";
+      } else {
+        alertBox.style.display = "none";
+      }
+    }
+
+    function updateCharts(timestamp, values) {
+      const isDataValid =
+        typeof values.temp !== "undefined" &&
+        typeof values.ph !== "undefined" &&
+        typeof values.do !== "undefined";
+
+      if (!dataReceived) {
+        dataReceived = true;
+        document.getElementById("noDataStatus").style.display = "none";
+      }
+
+      if (!isDataValid) {
+        document.getElementById("noDataStatus").style.display = "block";
+        return;
+      }
+
+      if (labels.length > 50) {
+        labels.shift();
+        tempData.shift();
+        phData.shift();
+        doData.shift();
+      }
+      labels.push(timestamp);
+      tempData.push(values.temp);
+      phData.push(values.ph);
+      doData.push(values.do);
+      tempChart.update();
+      phChart.update();
+      doChart.update();
+
+      document.getElementById("latestValues").innerHTML = `
+        🌡️ Temp: ${values.temp} °C | ⚗️ pH: ${values.ph} | 🫧 DO: ${values.do} mg/L <br>🕒 ${timestamp}`;
+      document.getElementById("status").textContent = "✅ Live";
+
+      let alertMessage = "";
+      if (values.temp < 26) alertMessage += "⚠️ Temperature below 26°C! ";
+      if (values.temp > 28) alertMessage += "⚠️ Temperature above 28°C! ";
+      if (values.ph < 6.5) alertMessage += "⚠️ pH below 6.50! ";
+      if (values.ph > 7.5) alertMessage += "⚠️ pH above 7.50! ";
+      if (values.do < 4.0) alertMessage += "⚠️ Oxygen below 4.00 mg/L! ";
+      if (values.do > 6.0) alertMessage += "⚠️ Oxygen above 6.00 mg/L! ";
+
+      showAlert(alertMessage.trim());
+    }
+
+    db.ref("/aquaculture").on("child_added", snapshot => {
+      const timestamp = snapshot.key;
+      const values = snapshot.val();
+      updateCharts(timestamp, values);
+    });
+
+    setTimeout(() => {
+      if (!dataReceived) {
+        document.getElementById("noDataStatus").style.display = "block";
+      }
+    }, 10000);
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+    }
+  </script>
+</body>
+</html>
+
+
