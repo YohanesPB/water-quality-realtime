@@ -15,12 +15,20 @@
       --accent-color: #0077cc;
     }
 
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --font-color: #e0e0e0;
+      --accent-color: #4dabf7;
+    }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: var(--bg-color);
       margin: 0;
       padding: 20px;
       color: var(--font-color);
+      transition: background-color 0.3s, color 0.3s;
     }
 
     header {
@@ -31,6 +39,33 @@
     h1 {
       font-size: 2.5rem;
       color: var(--accent-color);
+    }
+
+    .toggle-theme {
+      margin-top: 10px;
+      cursor: pointer;
+      background: none;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 5px 12px;
+      border-radius: 8px;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .latest-values {
+      display: flex;
+      gap: 30px;
+      font-size: 1.2rem;
     }
 
     .chart-container {
@@ -49,7 +84,15 @@
 <body>
   <header>
     <h1>📈 Real-Time Water Quality Data</h1>
+    <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
+
+  <div class="status-bar">
+    <div class="latest-values" id="latestValues">
+      ⏱️ Waiting for data...
+    </div>
+    <div id="status">🔄 Connecting...</div>
+  </div>
 
   <div class="chart-container">
     <h2>🌡️ Temperature (°C)</h2>
@@ -141,6 +184,10 @@
       tempChart.update();
       phChart.update();
       doChart.update();
+
+      document.getElementById("latestValues").innerHTML = `
+        🌡️ Temp: ${values.temp} °C | ⚗️ pH: ${values.ph} | 🫧 DO: ${values.do} mg/L <br>🕒 ${timestamp}`;
+      document.getElementById("status").textContent = "✅ Live";
     }
 
     db.ref("/aquaculture").on("child_added", snapshot => {
@@ -148,6 +195,12 @@
       const values = snapshot.val();
       updateCharts(timestamp, values);
     });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+    }
   </script>
 </body>
 </html>
+
