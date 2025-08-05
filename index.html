@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real-Time Water Quality Monitor</title>
+  <title> Peninjauan Kualitas Air Berkala </title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -119,32 +119,32 @@
 </head>
 <body>
   <header>
-    <h1>📈 Real-Time Water Quality Data</h1>
-    <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark Mode</button>
+    <h1>Peninjauan Berkala Kualitas Air Sistem Akuakultur</h1>
+    <button class="toggle-theme" onclick="toggleTheme()">Mode gelap/terang</button>
   </header>
 
-  <div id="noDataStatus" class="no-data-status" style="display: none;">🚫 No data acquired</div>
+  <div id="noDataStatus" class="no-data-status" style="display: none;">🚫 Tidak ada data terdeteksi</div>
 
   <div class="status-bar">
     <div class="latest-values" id="latestValues">
-      ⏱️ Waiting for data...
+      ⏱️ Menunggu unggahan data...
     </div>
-    <div id="status">🔄 Connecting...</div>
+    <div id="status">🔄 Menghubungkan jaringan...</div>
   </div>
 
   <div id="alert" class="alert-message"></div>
 
   <div class="charts-wrapper">
     <div class="chart-container">
-      <h2>🌡️ Temperature (°C)</h2>
+      <h2>🌡️ Temperatur Air (°C)</h2>
       <canvas id="tempChart"></canvas>
     </div>
     <div class="chart-container">
-      <h2>⚗️ pH Level</h2>
+      <h2>⚗️ pH</h2>
       <canvas id="phChart"></canvas>
     </div>
     <div class="chart-container">
-      <h2>🫧 Dissolved Oxygen (mg/L)</h2>
+      <h2>🫧 Oksigen Terlarut (mg/L)</h2>
       <canvas id="doChart"></canvas>
     </div>
   </div>
@@ -295,12 +295,12 @@
       document.getElementById("status").textContent = "✅ Live";
 
       let alertMessage = "";
-      if (values.temp < 26) alertMessage += "⚠️ Temperature below 26°C! ";
-      if (values.temp > 28) alertMessage += "⚠️ Temperature above 28°C! ";
-      if (values.ph < 6.5) alertMessage += "⚠️ pH below 6.50! ";
-      if (values.ph > 7.5) alertMessage += "⚠️ pH above 7.50! ";
-      if (values.do < 4.0) alertMessage += "⚠️ Oxygen below 4.00 mg/L! ";
-      if (values.do > 6.0) alertMessage += "⚠️ Oxygen above 6.00 mg/L! ";
+      if (values.temp < 26) alertMessage += "⚠️ Temperatur di bawah 26°C! ";
+      if (values.temp > 28) alertMessage += "⚠️ Temperatur di atas 28°C! ";
+      if (values.ph < 6.5) alertMessage += "⚠️ pH di bawah 6.50! ";
+      if (values.ph > 7.5) alertMessage += "⚠️ pH di atas 7.50! ";
+      if (values.do < 4.0) alertMessage += "⚠️ Oksigen di bawah 4.00 mg/L! ";
+      if (values.do > 6.0) alertMessage += "⚠️ Oksigen di atas 6.00 mg/L! ";
 
       showAlert(alertMessage.trim());
     }
