@@ -328,8 +328,7 @@
   dbRef.on("child_added", (snapshot) => {
   const timestamp = snapshot.key;
   const data = snapshot.val();
-  const readableTime = formatTimestamp(timestamp); // Optional
-  updateCharts(readableTime, data.temp, data.ph, data.do);
+  updateCharts(timestamp, data);
 });
 
     setTimeout(() => {
