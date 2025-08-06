@@ -323,11 +323,14 @@
       showAlert(alertMessage.trim());
     }
 
-    db.ref("/aquaculture").on("child_added", snapshot => {
-      const timestamp = snapshot.key;
-      const values = snapshot.val();
-      updateCharts(timestamp, values);
-    });
+  const dbRef = firebase.database().ref("/aquaculture");
+
+  dbRef.on("child_added", (snapshot) => {
+  const timestamp = snapshot.key;
+  const data = snapshot.val();
+  const readableTime = formatTimestamp(timestamp); // Optional
+  updateCharts(readableTime, data.temp, data.ph, data.do);
+});
 
     setTimeout(() => {
       if (!dataReceived) {
