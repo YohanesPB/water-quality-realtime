@@ -260,6 +260,23 @@
       }
     }
 
+    function formatTimestamp(ts) {
+  if (!ts || ts.length !== 15 || ts.indexOf("_") === -1) return ts;
+  
+  const datePart = ts.substring(0, 8); // YYYYMMDD
+  const timePart = ts.substring(9);   // HHMMSS
+
+  const year = datePart.substring(0, 4);
+  const month = datePart.substring(4, 6);
+  const day = datePart.substring(6, 8);
+
+  const hour = timePart.substring(0, 2);
+  const minute = timePart.substring(2, 4);
+  const second = timePart.substring(4, 6);
+
+  return `${day}-${month}-${year}, ${hour}:${minute}:${second}`;
+}
+    
     function updateCharts(timestamp, values) {
       const isDataValid =
         typeof values.temp !== "undefined" &&
@@ -282,7 +299,8 @@
         phData.shift();
         doData.shift();
       }
-      labels.push(timestamp);
+      const readableTime = formatTimestamp(timestamp);
+      labels.push(readableTime);
       tempData.push(values.temp);
       phData.push(values.ph);
       doData.push(values.do);
