@@ -323,12 +323,15 @@
       showAlert(alertMessage.trim());
     }
 
-  const dbRef = firebase.database().ref("/aquaculture");
+const dbRef = firebase.database().ref("/aquaculture");
 
-  dbRef.on("child_added", (snapshot) => {
-  const timestamp = snapshot.key;
+dbRef.limitToLast(1).on("value", (snapshot) => {
   const data = snapshot.val();
-  updateCharts(timestamp, data);
+  if (data) {
+    const lastKey = Object.keys(data)[0];
+    const latestValues = data[lastKey];
+    updateCharts(lastKey, latestValues);
+  }
 });
 
     setTimeout(() => {
