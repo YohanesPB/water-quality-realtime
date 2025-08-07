@@ -386,9 +386,9 @@ dbRef.limitToLast(1).on("value", (snapshot) => {
     }, 10000);
 
 // Historical data function setup
-const tempHistoricalChart = createChart("tempHistoricalChart", "Temperature (°C)", [], "#ff9966");
-const phHistoricalChart = createChart("phHistoricalChart", "pH", [], "#6699cc");
-const doHistoricalChart = createChart("doHistoricalChart", "Dissolved Oxygen (mg/L)", [], "#66cc99");
+const historicalTempChart = createChart("tempHistoricalChart", "Temperature (°C)", [], "#ff9966");
+const historicalPhChart = createChart("phHistoricalChart", "pH", [], "#6699cc");
+const historicalDoChart = createChart("doHistoricalChart", "Dissolved Oxygen (mg/L)", [], "#66cc99");
 
 function populateDropdowns(data) {
   const dateSet = new Set(), hourMap = {};
@@ -428,7 +428,7 @@ function populateDropdowns(data) {
   });
 }
 
-function loadHistoricalData() {
+function loadHistoricalCharts() {
   const selectedDate = document.getElementById("dateSelect").value;
   const selectedHour = document.getElementById("hourSelect").value;
   if (!selectedDate || !selectedHour) return alert("Please select both date and hour.");
