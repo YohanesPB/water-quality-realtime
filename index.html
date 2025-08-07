@@ -465,22 +465,17 @@ function updateHistoricalChart(chart, labels, data) {
 }
 
 // Populate dropdowns on load
-dbRef.once("value").then(snapshot => {
-  const data = snapshot.val();
-  if (data) populateDropdowns(data);
+document.addEventListener("DOMContentLoaded", () => {
+  dbRef.once("value").then(snapshot => {
+    const data = snapshot.val();
+    if (data) populateDropdowns(data);
+  });
 });
     
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
     }
-
-  window.onload = () => {
-  dbRef.once("value").then(snapshot => {
-    const data = snapshot.val();
-    populateDropdowns(data || {});
-  });
-};
   </script>
 </body>
 </html>
