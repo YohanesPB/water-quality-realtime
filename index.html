@@ -283,10 +283,6 @@ function createChart(ctxId, label, data, borderColor) {
   });
 }
 
-    const tempChart = createChart("tempChart", "Temperature (°C)", tempData, "#ff4d4d");
-    const phChart = createChart("phChart", "pH", phData, "#1f77b4");
-    const doChart = createChart("doChart", "Dissolved Oxygen (mg/L)", doData, "#2ca02c");
-
     function showAlert(message) {
       const alertBox = document.getElementById("alert");
       if (message) {
