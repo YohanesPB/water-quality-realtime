@@ -330,22 +330,18 @@
 const dbRef = firebase.database().ref("/aquaculture");
 
 dbRef.limitToLast(1).on("value", (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    const lastKey = Object.keys(data)[0];
-    const latestValues = data[lastKey];
+    const data = snapshot.val();
+    if (data) {
+      const lastKey = Object.keys(data)[0];
+      const latestValues = data[lastKey];
 
-    // Add validation here
-    if (
-      latestValues.timestamp &&
-      latestValues.timestamp.startsWith("2025")
-    ) {
-      updateCharts(lastKey, latestValues);
-    } else {
-      console.warn("⚠️ Ignored data with invalid timestamp:", latestValues.timestamp);
+      if (latestValues.timestamp && isValidTimestamp(latestValues.timestamp)) {
+        updateCharts(lastKey, latestValues);
+      } else {
+        console.warn("⚠️ Ignored data with invalid timestamp:", latestValues.timestamp);
+      }
     }
-  }
-});
+  });
 
     setTimeout(() => {
       if (!dataReceived) {
