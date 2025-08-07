@@ -369,12 +369,14 @@ const dbRef = firebase.database().ref("/aquaculture");
 
 dbRef.limitToLast(1).on("value", (snapshot) => {
   const data = snapshot.val();
+  console.log("🔥 New live data received:", data);
   if (data) {
     const lastKey = Object.keys(data)[0];
+    console.log("🕒 Last key:", lastKey);
 
-    // ✅ Only allow year 2025
     if (isValidKeyTimestamp(lastKey)) {
       const latestValues = data[lastKey];
+      console.log("📈 Latest values:", latestValues);
       updateCharts(lastKey, latestValues);
     }
   }
