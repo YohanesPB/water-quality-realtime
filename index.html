@@ -291,12 +291,12 @@
         return;
       }
 
-      /*if (labels.length > 50) {
+      if (labels.length > 50) {
         labels.shift();
         tempData.shift();
         phData.shift();
         doData.shift();
-      }*/
+      }
       
       const readableTime = formatTimestamp(timestamp);
       labels.push(readableTime);
@@ -330,29 +330,16 @@
     
 const dbRef = firebase.database().ref("/aquaculture");
 
-dbRef.on("value", (snapshot) => {
+dbRef.limitToLast(1).on("value", (snapshot) => {
   const data = snapshot.val();
-if (data) {
-    // Clear charts
-    tempChart.data.labels = [];
-    tempChart.data.datasets[0].data = [];
-    phChart.data.labels = [];
-    phChart.data.datasets[0].data = [];
-    doChart.data.labels = [];
-    doChart.data.datasets[0].data = [];
+  if (data) {
+    const lastKey = Object.keys(data)[0];
 
-    const sortedKeys = Object.keys(data).sort(); // Or .slice(-100) for last 100 entries
-
-    sortedKeys.forEach((key) => {
-      if (isValidKeyTimestamp(key)) {
-        const entry = data[key];
-        updateCharts(key, entry);
-      }
-    });
-
-    tempChart.update();
-    phChart.update();
-    doChart.update();
+    // ✅ Only allow year 2025
+    if (isValidKeyTimestamp(lastKey)) {
+      const latestValues = data[lastKey];
+      updateCharts(lastKey, latestValues);
+    }
   }
 });
 
