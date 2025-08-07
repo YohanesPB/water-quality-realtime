@@ -291,12 +291,13 @@
         return;
       }
 
-      if (labels.length > 50) {
+      /*if (labels.length > 50) {
         labels.shift();
         tempData.shift();
         phData.shift();
         doData.shift();
-      }
+      }*/
+      
       const readableTime = formatTimestamp(timestamp);
       labels.push(readableTime);
       tempData.push(values.temp);
