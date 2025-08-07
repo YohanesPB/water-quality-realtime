@@ -471,17 +471,20 @@ function updateHistoricalChart(chart, labels, data) {
 document.addEventListener("DOMContentLoaded", () => {
   dbRef.once("value").then(snapshot => {
     const data = snapshot.val();
-      if (data) {
-      console.log("Fetched data:", data);
+    console.log("✅ Data fetched from Firebase:", data);  // ✅ Correct place
+
+    if (data) {
       populateDropdowns(data);
+      // optionally call other processing functions
     } else {
-      console.log("No data found.");
+      console.warn("⚠️ No data found in Firebase.");
     }
+  }).catch(error => {
+    console.error("❌ Firebase error:", error);
   });
 });
 
 // console check
-console.log("Data fetched from Firebase:", data);
 console.log("Populating dropdowns...");
 console.log("Available dates:", Array.from(dateSet));
     
