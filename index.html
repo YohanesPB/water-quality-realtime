@@ -329,7 +329,7 @@
     
 const dbRef = firebase.database().ref("/aquaculture");
 
-dbRef.limitToLast(1).on("value", (snapshot) => {
+dbRef.on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
     const lastKey = Object.keys(data)[0];
