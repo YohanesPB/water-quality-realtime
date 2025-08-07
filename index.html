@@ -205,80 +205,81 @@
 
     let dataReceived = false;
 
-    function createChart(ctxId, label, data, borderColor) {
-      return new Chart(document.getElementById(ctxId).getContext("2d"), {
-        type: "line",
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: label,
-              data: data,
-              fill: false,
-              borderColor: borderColor,
-              backgroundColor: borderColor,
-              tension: 0.3,
-              pointRadius: 4,
-              pointHoverRadius: 6
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          animation: false,
-          interaction: {
-            mode: 'nearest',
-            intersect: false
-          },
-          plugins: {
-            tooltip: {
-              enabled: true,
-              mode: 'index',
-              intersect: false,
-              callbacks: {
-                label: function(context) {
-                  return `${context.dataset.label}: ${context.formattedValue}`;
-                },
-                title: function(context) {
-                  return `🕒 ${context[0].label}`;
-                }
-              }
+function createChart(ctxId, label, data, borderColor) {
+  const canvas = document.getElementById(ctxId);
+  if (!canvas) {
+    console.warn(`⚠️ Canvas element with id "${ctxId}" not found in DOM.`);
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+
+  return new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: label,
+          data: data,
+          fill: false,
+          borderColor: borderColor,
+          backgroundColor: borderColor,
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      animation: false,
+      interaction: {
+        mode: 'nearest',
+        intersect: false
+      },
+      plugins: {
+        tooltip: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function(context) {
+              return `${context.dataset.label}: ${context.formattedValue}`;
             },
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: 'x'
-              },
-              zoom: {
-                wheel: {
-                  enabled: true
-                },
-                pinch: {
-                  enabled: true
-                },
-                mode: 'x'
-              }
-            }
-          },
-          scales: {
-            x: {
-              display: true,
-              title: {
-                display: true,
-                text: "Timestamp"
-              }
-            },
-            y: {
-              display: true,
-              title: {
-                display: true,
-                text: label
-              }
+            title: function(context) {
+              return `🕒 ${context[0].label}`;
             }
           }
+        },
+        zoom: {
+          pan: { enabled: true, mode: 'x' },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'x'
+          }
         }
-      });
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: "Timestamp"
+          }
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: label
+          }
+        }
+      }
     }
+  });
+}
 
     const tempChart = createChart("tempChart", "Temperature (°C)", tempData, "#ff4d4d");
     const phChart = createChart("phChart", "pH", phData, "#1f77b4");
