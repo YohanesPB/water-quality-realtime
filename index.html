@@ -121,7 +121,7 @@
 <body>
   <header>
     <h1>Peninjauan Berkala Kualitas Air Sistem Akuakultur</h1>
-    <button class="toggle-theme" onclick="toggleTheme()">Mode gelap/terang</button>
+    <button id="modeToggle" class="toggle-theme">Mode Malam</button>
   </header>
 
   <div class="status-bar">
@@ -520,10 +520,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
     
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme");
-      document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
-    }
+   document.getElementById("modeToggle").addEventListener("click", function () {
+  document.body.classList.toggle("dark-mode");
+
+  const isDarkMode = document.body.classList.contains("dark-mode");
+  this.textContent = isDarkMode ? "Mode Siang" : "Mode Malam";
+});
   </script>
 </body>
 </html>
