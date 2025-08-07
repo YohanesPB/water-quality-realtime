@@ -411,8 +411,8 @@ function populateDropdowns(data) {
 
   const dateSelect = document.getElementById("dateSelect");
   const hourSelect = document.getElementById("hourSelect");
-  dateSelect.innerHTML = "<option value=''>-- Select Date --</option>";
-  hourSelect.innerHTML = "<option value=''>-- Select Hour --</option>";
+  dateSelect.innerHTML = "<option value=''>-- Pilih Tanggal --</option>";
+  hourSelect.innerHTML = "<option value=''>-- Pilih Jam --</option>";
 
   Array.from(dateSet).sort().forEach(date => {
     const option = document.createElement("option");
