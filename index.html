@@ -205,6 +205,8 @@
 
     let dataReceived = false;
 
+    let tempChart, phChart, doChart; 
+
 function createChart(ctxId, label, data, borderColor) {
   const canvas = document.getElementById(ctxId);
   if (!canvas) {
@@ -469,15 +471,19 @@ function updateHistoricalChart(chart, labels, data) {
   chart.update();
 }
 
-// Populate dropdowns on load
 document.addEventListener("DOMContentLoaded", () => {
+  // Now it's safe to access canvas elements
+  tempChart = createChart("tempChart", "Temperature (°C)", tempData, "#ff4d4d");
+  phChart = createChart("phChart", "pH", phData, "#1f77b4");
+  doChart = createChart("doChart", "Dissolved Oxygen (mg/L)", doData, "#2ca02c");
+
+  // Also load historical dropdowns
   dbRef.once("value").then(snapshot => {
     const data = snapshot.val();
-    console.log("✅ Data fetched from Firebase:", data);  // ✅ Correct place
+    console.log("✅ Data fetched from Firebase:", data);
 
     if (data) {
       populateDropdowns(data);
-      // optionally call other processing functions
     } else {
       console.warn("⚠️ No data found in Firebase.");
     }
