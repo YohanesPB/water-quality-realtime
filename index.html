@@ -379,11 +379,13 @@ dbRef.limitToLast(1).on("value", (snapshot) => {
   }
 });
 
-    setTimeout(() => {
+   /*
+   setTimeout(() => {
       if (!dataReceived) {
         document.getElementById("noDataStatus").style.display = "block";
       }
     }, 10000);
+    */
 
 // Historical data function setup
 const historicalTempChart = createChart("tempHistoricalChart", "Temperature (°C)", [], "#ff9966");
