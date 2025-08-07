@@ -423,7 +423,7 @@ function populateDropdowns(data) {
 
   dateSelect.addEventListener("change", () => {
     const selectedDate = dateSelect.value;
-    hourSelect.innerHTML = "<option value=''>-- Select Hour --</option>";
+    hourSelect.innerHTML = "<option value=''>-- Pilih Jam --</option>";
     if (hourMap[selectedDate]) {
       Array.from(hourMap[selectedDate]).sort().forEach(hour => {
         const option = document.createElement("option");
