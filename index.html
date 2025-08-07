@@ -468,9 +468,19 @@ function updateHistoricalChart(chart, labels, data) {
 document.addEventListener("DOMContentLoaded", () => {
   dbRef.once("value").then(snapshot => {
     const data = snapshot.val();
-    if (data) populateDropdowns(data);
+      if (data) {
+      console.log("Fetched data:", data);
+      populateDropdowns(data);
+    } else {
+      console.log("No data found.");
+    }
   });
 });
+
+// console check
+console.log("Data fetched from Firebase:", data);
+console.log("Populating dropdowns...");
+console.log("Available dates:", Array.from(dateSet));
     
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
