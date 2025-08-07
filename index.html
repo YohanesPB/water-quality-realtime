@@ -274,6 +274,12 @@
 
   return `${day}-${month}-${year}, ${hour}:${minute}:${second}`;
 }
+
+    function isValidTimestamp(timestampStr) {
+  // Expected timestamp format: "2025-08-07 15:23:12"
+  const year = parseInt(timestampStr.substring(0, 4));
+  return year === 2025;
+}
     
     function updateCharts(timestamp, values) {
       const isDataValid =
@@ -328,7 +334,16 @@ dbRef.limitToLast(1).on("value", (snapshot) => {
   if (data) {
     const lastKey = Object.keys(data)[0];
     const latestValues = data[lastKey];
-    updateCharts(lastKey, latestValues);
+
+    // Add validation here
+    if (
+      latestValues.timestamp &&
+      latestValues.timestamp.startsWith("2025")
+    ) {
+      updateCharts(lastKey, latestValues);
+    } else {
+      console.warn("⚠️ Ignored data with invalid timestamp:", latestValues.timestamp);
+    }
   }
 });
 
