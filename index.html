@@ -331,14 +331,27 @@ const dbRef = firebase.database().ref("/aquaculture");
 
 dbRef.on("value", (snapshot) => {
   const data = snapshot.val();
-  if (data) {
-    const lastKey = Object.keys(data)[0];
+if (data) {
+    // Clear the charts first (to avoid duplicates after refresh)
+    tempChart.data.labels = [];
+    tempChart.data.datasets[0].data = [];
+    phChart.data.labels = [];
+    phChart.data.datasets[0].data = [];
+    doChart.data.labels = [];
+    doChart.data.datasets[0].data = [];
 
-    // ✅ Only allow year 2025
-    if (isValidKeyTimestamp(lastKey)) {
-      const latestValues = data[lastKey];
-      updateCharts(lastKey, latestValues);
-    }
+    // Loop through all entries in aquaculture
+    Object.keys(data).forEach((key) => {
+      if (isValidKeyTimestamp(key)) {
+        const entry = data[key];
+        updateCharts(key, entry); // Reuse your chart update logic
+      }
+    });
+
+    // Update the charts
+    tempChart.update();
+    phChart.update();
+    doChart.update();
   }
 });
 
