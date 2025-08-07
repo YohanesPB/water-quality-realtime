@@ -274,12 +274,6 @@
 
   return `${day}-${month}-${year}, ${hour}:${minute}:${second}`;
 }
-
-    function isValidTimestamp(timestampStr) {
-  // Expected timestamp format: "2025-08-07 15:23:12"
-  const year = parseInt(timestampStr.substring(0, 4));
-  return year === 2025;
-}
     
     function updateCharts(timestamp, values) {
       const isDataValid =
@@ -327,6 +321,14 @@
       showAlert(alertMessage.trim());
     }
 
+function isValidTimestamp(timestampStr) {
+  if (!timestampStr) return false;
+  // Remove the comma and any extra space
+  const cleaned = timestampStr.replace(',', '').trim(); // "2025-08-07 14:12:00"
+  const year = parseInt(cleaned.substring(0, 4), 10);
+  return year === 2025;
+}
+    
 const dbRef = firebase.database().ref("/aquaculture");
 
 dbRef.limitToLast(1).on("value", (snapshot) => {
