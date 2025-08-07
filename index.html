@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --bg-color: #f0f4f8;
@@ -165,6 +166,8 @@
 
   <button onclick="loadHistoricalCharts()" style="margin-left: 1em;">Tampilkan</button>
 </div>
+
+  <button onclick="exportToXLSX()">📊 Unduh file Excel</button>
 
 <div class="charts-wrapper">
   <div class="chart-container">
@@ -467,6 +470,34 @@ function updateHistoricalChart(chart, labels, data) {
   chart.update();
 }
 
+function exportToXLSX() {
+  dbRef.once("value").then(snapshot => {
+    const rawData = snapshot.val();
+    if (!rawData) return alert("No data to export!");
+
+    const exportData = [];
+
+    Object.keys(rawData).forEach(key => {
+      const { temp, ph, do: doVal } = rawData[key];
+      if (temp !== 0 && ph !== 0 && doVal !== 0) {
+        exportData.push({
+          Timestamp: key,
+          Temperature: temp,
+          pH: ph,
+          DO: doVal
+        });
+      }
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "WaterQuality");
+
+    XLSX.writeFile(workbook, "water_quality_data.xlsx");
+  });
+}
+
+    
 document.addEventListener("DOMContentLoaded", () => {
   // Now it's safe to access canvas elements
   tempChart = createChart("tempChart", "Temperature (°C)", tempData, "#ff4d4d");
