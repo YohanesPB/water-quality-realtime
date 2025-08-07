@@ -154,10 +154,14 @@
 
 <div class="historical-controls" style="margin-bottom: 1em;">
   <label for="dateSelect">Tanggal:</label>
-  <select id="dateSelect"></select>
+  <select id="dateSelect">
+    <option value="" disabled selected>— Pilih hari —</option>
+  </select>
 
   <label for="hourSelect" style="margin-left: 1em;">Jam:</label>
-  <select id="hourSelect"></select>
+  <select id="hourSelect">
+    <option value="" disabled selected>— Pilih jam —</option>
+  </select>
 
   <button onclick="loadHistoricalCharts()" style="margin-left: 1em;">Tampilkan</button>
 </div>
@@ -470,6 +474,13 @@ dbRef.once("value").then(snapshot => {
       const current = document.documentElement.getAttribute("data-theme");
       document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
     }
+
+  window.onload = () => {
+  dbRef.once("value").then(snapshot => {
+    const data = snapshot.val();
+    populateDropdowns(data || {});
+  });
+};
   </script>
 </body>
 </html>
