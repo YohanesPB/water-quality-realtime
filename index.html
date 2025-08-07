@@ -321,14 +321,24 @@
       showAlert(alertMessage.trim());
     }
 
+    function isValidKeyTimestamp(key) {
+  // Key format: "YYYYMMDD_HHMMSS"
+  const year = parseInt(key.substring(0, 4), 10);
+  return year === 2025;
+}
+    
 const dbRef = firebase.database().ref("/aquaculture");
 
 dbRef.limitToLast(1).on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
     const lastKey = Object.keys(data)[0];
-    const latestValues = data[lastKey];
-    updateCharts(lastKey, latestValues);
+
+    // ✅ Only allow year 2025
+    if (isValidKeyTimestamp(lastKey)) {
+      const latestValues = data[lastKey];
+      updateCharts(lastKey, latestValues);
+    }
   }
 });
 
