@@ -388,9 +388,9 @@ dbRef.limitToLast(1).on("value", (snapshot) => {
     */
 
 // Historical data function setup
-const historicalTempChart = createChart("tempHistoricalChart", "Temperature (°C)", [], "#ff9966");
-const historicalPhChart = createChart("phHistoricalChart", "pH", [], "#6699cc");
-const historicalDoChart = createChart("doHistoricalChart", "Dissolved Oxygen (mg/L)", [], "#66cc99");
+const historicalTempChart = createChart("historicalTempChart", "Temperature (°C)", [], "#ff9966");
+const historicalPhChart = createChart("historicalPhChart", "pH", [], "#6699cc");
+const historicalDoChart = createChart("historicalDoChart", "Dissolved Oxygen (mg/L)", [], "#66cc99");
 
 function populateDropdowns(data) {
   const dateSet = new Set(), hourMap = {};
