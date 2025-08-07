@@ -308,7 +308,7 @@
       doChart.update();
 
       document.getElementById("latestValues").innerHTML = `
-        🌡️ Temp: ${values.temp} °C | ⚗️ pH: ${values.ph} | 🫧 DO: ${values.do} mg/L <br>🕒 ${timestamp}`;
+        🌡️ Temp: ${values.temp} °C | ⚗️ pH: ${values.ph} | 🫧 DO: ${values.do} mg/L <br>🕒 ${formatTimestamp(timestamp)}`;
       document.getElementById("status").textContent = "✅ Live";
 
       let alertMessage = "";
