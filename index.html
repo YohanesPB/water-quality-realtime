@@ -321,6 +321,8 @@
       showAlert(alertMessage.trim());
     }
 
+const dbRef = firebase.database().ref("/aquaculture");
+
 dbRef.limitToLast(1).on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
