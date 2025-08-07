@@ -132,6 +132,7 @@
 
   <div id="alert" class="alert-message"></div>
 
+   <!-- Live Update Charts Section -->
   <div class="charts-wrapper">
     <div class="chart-container">
       <h2>🌡️ Temperatur Air (°C)</h2>
@@ -146,6 +147,37 @@
       <canvas id="doChart"></canvas>
     </div>
   </div>
+
+  <!-- Historical Charts Section -->
+<hr>
+<h2 style="margin-top: 2em;">📊 Riwayat Data</h2>
+
+<div class="historical-controls" style="margin-bottom: 1em;">
+  <label for="dateSelect">Tanggal:</label>
+  <select id="dateSelect"></select>
+
+  <label for="hourSelect" style="margin-left: 1em;">Jam:</label>
+  <select id="hourSelect"></select>
+
+  <button onclick="loadHistoricalCharts()" style="margin-left: 1em;">Tampilkan</button>
+</div>
+
+<div class="charts-wrapper">
+  <div class="chart-container">
+    <h2>🌡️ Riwayat Temperatur Air (°C)</h2>
+    <canvas id="historicalTempChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h2>⚗️ Riwayat pH</h2>
+    <canvas id="historicalPhChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h2>🫧 Riwayat Oksigen Terlarut (mg/L)</h2>
+    <canvas id="historicalDoChart"></canvas>
+  </div>
+</div>
 
   <script>
     const firebaseConfig = {
@@ -349,6 +381,91 @@ dbRef.limitToLast(1).on("value", (snapshot) => {
       }
     }, 10000);
 
+// Historical data function setup
+const tempHistoricalChart = createChart("tempHistoricalChart", "Temperature (°C)", [], "#ff9966");
+const phHistoricalChart = createChart("phHistoricalChart", "pH", [], "#6699cc");
+const doHistoricalChart = createChart("doHistoricalChart", "Dissolved Oxygen (mg/L)", [], "#66cc99");
+
+function populateDropdowns(data) {
+  const dateSet = new Set(), hourMap = {};
+  Object.keys(data).forEach(key => {
+    if (isValidKeyTimestamp(key)) {
+      const [date, time] = key.split("_");
+      const hour = time.substring(0, 2);
+      dateSet.add(date);
+      if (!hourMap[date]) hourMap[date] = new Set();
+      hourMap[date].add(hour);
+    }
+  });
+
+  const dateSelect = document.getElementById("dateSelect");
+  const hourSelect = document.getElementById("hourSelect");
+  dateSelect.innerHTML = "<option value=''>-- Select Date --</option>";
+  hourSelect.innerHTML = "<option value=''>-- Select Hour --</option>";
+
+  Array.from(dateSet).sort().forEach(date => {
+    const option = document.createElement("option");
+    option.value = date;
+    option.text = `${date.slice(6, 8)}-${date.slice(4, 6)}-${date.slice(0, 4)}`;
+    dateSelect.appendChild(option);
+  });
+
+  dateSelect.addEventListener("change", () => {
+    const selectedDate = dateSelect.value;
+    hourSelect.innerHTML = "<option value=''>-- Select Hour --</option>";
+    if (hourMap[selectedDate]) {
+      Array.from(hourMap[selectedDate]).sort().forEach(hour => {
+        const option = document.createElement("option");
+        option.value = hour;
+        option.text = `${hour}:00`;
+        hourSelect.appendChild(option);
+      });
+    }
+  });
+}
+
+function loadHistoricalData() {
+  const selectedDate = document.getElementById("dateSelect").value;
+  const selectedHour = document.getElementById("hourSelect").value;
+  if (!selectedDate || !selectedHour) return alert("Please select both date and hour.");
+
+  dbRef.once("value").then(snapshot => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    const filtered = Object.keys(data)
+      .filter(k => k.startsWith(`${selectedDate}_${selectedHour}`))
+      .sort();
+
+    const timeLabels = [], tData = [], pData = [], dData = [];
+    filtered.forEach(k => {
+      const v = data[k];
+      if (v && typeof v.temp !== "undefined") {
+        timeLabels.push(formatTimestamp(k));
+        tData.push(v.temp);
+        pData.push(v.ph);
+        dData.push(v.do);
+      }
+    });
+
+    updateHistoricalChart(historicalTempChart, timeLabels, tData);
+    updateHistoricalChart(historicalPhChart, timeLabels, pData);
+    updateHistoricalChart(historicalDoChart, timeLabels, dData);
+  });
+}
+
+function updateHistoricalChart(chart, labels, data) {
+  chart.data.labels = labels;
+  chart.data.datasets[0].data = data;
+  chart.update();
+}
+
+// Populate dropdowns on load
+dbRef.once("value").then(snapshot => {
+  const data = snapshot.val();
+  if (data) populateDropdowns(data);
+});
+    
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
