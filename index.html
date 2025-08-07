@@ -312,11 +312,11 @@
 
       let alertMessage = "";
       if (values.temp < 26) alertMessage += "⚠️ Temperatur di bawah 26°C! ";
-      if (values.temp > 28) alertMessage += "⚠️ Temperatur di atas 28°C! ";
+      if (values.temp > 30) alertMessage += "⚠️ Temperatur di atas 30°C! ";
       if (values.ph < 6.5) alertMessage += "⚠️ pH di bawah 6.50! ";
-      if (values.ph > 7.5) alertMessage += "⚠️ pH di atas 7.50! ";
+      if (values.ph > 8.0) alertMessage += "⚠️ pH di atas 8.00! ";
       if (values.do < 4.0) alertMessage += "⚠️ Oksigen di bawah 4.00 mg/L! ";
-      if (values.do > 6.0) alertMessage += "⚠️ Oksigen di atas 6.00 mg/L! ";
+      if (values.do > 7.0) alertMessage += "⚠️ Oksigen di atas 7.00 mg/L! ";
 
       showAlert(alertMessage.trim());
     }
