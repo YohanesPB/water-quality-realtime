@@ -153,20 +153,20 @@
 <hr>
 <h2 style="margin-top: 2em;">📊 Riwayat Data</h2>
 
-<div class="historical-controls" style="margin-bottom: 1em;">
+<div class="historical-controls" style="margin-bottom: 1.5em;">
   <label for="dateSelect">Tanggal:</label>
   <select id="dateSelect">
-    <option value="" disabled selected>— Pilih hari —</option>
+    <option value="" disabled selected>— Pilih Tanggal —</option>
   </select>
 
-  <label for="hourSelect" style="margin-left: 1em;">Jam:</label>
+  <label for="hourSelect" style="margin-left: 1.5em;">Jam:</label>
   <select id="hourSelect">
-    <option value="" disabled selected>— Pilih jam —</option>
+    <option value="" disabled selected>— Pilih Jam —</option>
   </select>
 
-  <button onclick="loadHistoricalCharts()" style="margin-left: 1em;">Tampilkan</button>
+  <button onclick="loadHistoricalCharts()" style="margin-left: 1.5em;">Tampilkan</button>
 
-   <button onclick="exportToXLSX()" style="margin-left: 1em;">📊 Unduh file Excel</button>
+   <button onclick="exportToXLSX()" style="margin-left: 1.5em;">📊 Unduh file Excel</button>
 </div>
 
 
@@ -393,9 +393,9 @@ dbRef.limitToLast(1).on("value", (snapshot) => {
     */
 
 // Historical data function setup
-const historicalTempChart = createChart("historicalTempChart", "Temperature (°C)", [], "#ff9966");
+const historicalTempChart = createChart("historicalTempChart", "Temperatur (°C)", [], "#ff9966");
 const historicalPhChart = createChart("historicalPhChart", "pH", [], "#6699cc");
-const historicalDoChart = createChart("historicalDoChart", "Dissolved Oxygen (mg/L)", [], "#66cc99");
+const historicalDoChart = createChart("historicalDoChart", "DO (mg/L)", [], "#66cc99");
 
 function populateDropdowns(data) {
   const dateSet = new Set(), hourMap = {};
@@ -501,9 +501,9 @@ function exportToXLSX() {
     
 document.addEventListener("DOMContentLoaded", () => {
   // Now it's safe to access canvas elements
-  tempChart = createChart("tempChart", "Temperature (°C)", tempData, "#ff4d4d");
+  tempChart = createChart("tempChart", "Temperatur (°C)", tempData, "#ff4d4d");
   phChart = createChart("phChart", "pH", phData, "#1f77b4");
-  doChart = createChart("doChart", "Dissolved Oxygen (mg/L)", doData, "#2ca02c");
+  doChart = createChart("doChart", "DO (mg/L)", doData, "#2ca02c");
 
   // Also load historical dropdowns
   dbRef.once("value").then(snapshot => {
