@@ -55,22 +55,57 @@
       border-radius: 8px;
     }
 
+    /* Status bar container */
     .status-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--card-bg);
-      padding: 10px 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-bottom: 10px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      border-radius: 8px;
+      background-color: var(--card-bg);
+      color: var(--font-color);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      font-family: "Segoe UI", sans-serif;
+      transition: background-color 0.3s, color 0.3s;
     }
 
+    /* Live values display */
     .latest-values {
-      display: flex;
-      gap: 30px;
-      font-size: 1.2rem;
+      font-size: 1rem;
+      line-height: 1.4;
     }
+
+    /* Status indicator */
+  #status {
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: rgba(0, 119, 204, 0.1);
+    transition: background 0.3s, color 0.3s;
+  }
+
+    /* Green status for "Live" */
+  .status-live {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+  }
+
+  /* Orange status for "Connecting" */
+  .status-connecting {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+  }
+
+  /* Fade-in animation for updates */
+  .fade-update {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+     @keyframes fadeIn {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
+  }
 
     .alert-message {
       background-color: var(--alert-color);
@@ -196,7 +231,9 @@
     <div class="latest-values" id="latestValues">
       ⏱️ Menunggu unggahan data...
     </div>
-    <div id="status">🔄 Menghubungkan jaringan...</div>
+    <div id="status" class="status-connecting">
+      🔄 Menghubungkan jaringan...
+    </div>
   </div>
 
   <div id="alert" class="alert-message"></div>
@@ -481,6 +518,13 @@ function createChart(ctxId, label, data, borderColor) {
       document.getElementById("latestValues").innerHTML = `
         🌡️ Temp: ${values.temp} °C | ⚗️ pH: ${values.ph} | 🫧 DO: ${values.do} mg/L <br>🕒 ${formatTimestamp(timestamp)}`;
       document.getElementById("status").textContent = "✅ Live";
+
+      document.getElementById("latestValues").classList.add("fade-update");
+      setTimeout(() =>document.getElementById("latestValues").classList.remove("fade-update"), 500);
+
+      document.getElementById("status").textContent = "✅ Live";
+      document.getElementById("status").remove("status-connecting");
+      document.getElementById("status").classList.add("status-live");
 
       let alertMessage = "";
       if (values.temp < 26) alertMessage += "⚠️ Temperatur di bawah 26°C! ";
