@@ -319,7 +319,11 @@
 
     let dataReceived = false;
 
-    let tempChart, phChart, doChart; 
+    let tempChart, phChart, doChart;
+
+    const fontColor = getComputedStyle(document.documentElement)
+                      .getPropertyValue('--font-color')
+                      .trim();
 
 function createChart(ctxId, label, data, borderColor) {
   const canvas = document.getElementById(ctxId);
@@ -387,17 +391,17 @@ function createChart(ctxId, label, data, borderColor) {
                 size: 16,     // bigger font size
                 weight: "bold" // bold text
             },
-            color: var(--font-color);
+            color: fontColor;
           },
            ticks: {
-              color: var(--font-color), // X-axis labels color
+              color: fontColor, // X-axis labels color
               font: {
               size: 14
       }
     },
     grid: {
-      color: var(--font-color)", // inside lines color
-      borderColor: var(--font-color) // X-axis line color
+      color: fontColor, // inside lines color
+      borderColor: fontColor // X-axis line color
     }
         },
         y: {
