@@ -411,28 +411,32 @@ function createChart(ctxId, label, data, borderColor) {
     
 const dbRef = firebase.database().ref("/aquaculture");
 
-dbRef.limitToLast(1).on("value", (snapshot) => {
+dbRef.limitToLast(5).on("value", (snapshot) => {
   const data = snapshot.val();
-  console.log("🔥 New live data received:", data);
-  if (data) {
-    const lastKey = Object.keys(data)[0];
-    console.log("🕒 Last key:", lastKey);
+  if (!data) return;
 
-    if (isValidKeyTimestamp(lastKey)) {
-      const latestValues = data[lastKey];
-      console.log("📈 Latest values:", latestValues);
-      updateCharts(lastKey, latestValues);
+  const keys = Object.keys(data);
+  // Sort keys by time (string sort works because YYYYMMDD_HHMMSS format)
+  keys.sort();
+
+  // Find the last valid key
+  let validKey = null;
+  for (let i = keys.length - 1; i >= 0; i--) {
+    if (isValidKeyTimestamp(keys[i])) {
+      validKey = keys[i];
+      break;
     }
   }
-});
 
-   /*
-   setTimeout(() => {
-      if (!dataReceived) {
-        document.getElementById("noDataStatus").style.display = "block";
-      }
-    }, 10000);
-    */
+  if (!validKey) {
+    console.warn("⚠️ No valid 2025 timestamp found in recent data");
+    return;
+  }
+
+  const latestValues = data[validKey];
+  console.log("📈 Latest valid values:", latestValues);
+  updateCharts(validKey, latestValues);
+});
 
 // Historical data function setup
 const historicalTempChart = createChart("historicalTempChart", "Temperatur (°C)", [], "#ff9966");
