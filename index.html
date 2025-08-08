@@ -408,34 +408,38 @@ function createChart(ctxId, label, data, borderColor) {
   const year = parseInt(key.substring(0, 4), 10);
   return year === 2025;
 }
+
+    function hasNonZeroValues(values) {
+  return !(values.temp === 0 && values.ph === 0 && values.do === 0);
+}
     
 const dbRef = firebase.database().ref("/aquaculture");
 
-dbRef.limitToLast(5).on("value", (snapshot) => {
+dbRef.limitToLast(1).on("value", (snapshot) => {
   const data = snapshot.val();
-  if (!data) return;
+  console.log("🔥 New live data received:", data);
+  
+  if (data) {
+    const lastKey = Object.keys(data)[0];
+    console.log("🕒 Last key:", lastKey);
 
-  const keys = Object.keys(data);
-  // Sort keys by time (string sort works because YYYYMMDD_HHMMSS format)
-  keys.sort();
-
-  // Find the last valid key
-  let validKey = null;
-  for (let i = keys.length - 1; i >= 0; i--) {
-    if (isValidKeyTimestamp(keys[i])) {
-      validKey = keys[i];
-      break;
+    // ✅ Skip data if the year is not 2025
+    if (!isValidKeyTimestamp(lastKey)) {
+      console.warn("⏩ Skipping data — invalid year in key:", lastKey);
+      return;
     }
-  }
 
-  if (!validKey) {
-    console.warn("⚠️ No valid 2025 timestamp found in recent data");
-    return;
-  }
+    const latestValues = data[lastKey];
 
-  const latestValues = data[validKey];
-  console.log("📈 Latest valid values:", latestValues);
-  updateCharts(validKey, latestValues);
+    // ✅ Skip data if all values are zero
+    if (!hasNonZeroValues(latestValues)) {
+      console.warn("⏩ Skipping data — all values are zero:", latestValues);
+      return;
+    }
+
+    console.log("📈 Updating charts with values:", latestValues);
+    updateCharts(lastKey, latestValues);
+  }
 });
 
 // Historical data function setup
