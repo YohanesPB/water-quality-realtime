@@ -314,14 +314,21 @@ function createChart(ctxId, label, data, borderColor) {
           display: true,
           title: {
             display: true,
-            text: "Waktu"
-          }
+            text: "Waktu",
+            font: {
+                size: 16,     // bigger font size
+                weight: "bold" // bold text
+            }
         },
         y: {
           display: true,
           title: {
             display: true,
-            text: label
+            text: label,
+            font: {
+                size: 16,     // bigger font size
+                weight: "bold" // bold text
+            }
           }
         }
       }
