@@ -188,6 +188,48 @@
 </div>
 
   <script>
+    // Auto-clean old or invalid data before loading charts
+(function() {
+  const dbUrl = "https://smart-monitoring-water-quality-default-rtdb.asia-southeast1.firebasedatabase.app/aquaculture.json";
+
+  fetch(dbUrl)
+    .then(res => res.json())
+    .then(data => {
+      if (!data) {
+        console.log("❌ No data found in 'aquaculture'.");
+        return;
+      }
+
+      let toDelete = [];
+
+      Object.keys(data).forEach(key => {
+        const entry = data[key];
+        const startsWith2036 = key.startsWith("2036");
+        const hasZeroValue = entry.do === 0 && entry.ph === 0 && entry.temp === 0;
+
+        if (startsWith2036 || hasZeroValue) {
+          toDelete.push(key);
+        }
+      });
+
+      if (toDelete.length === 0) {
+        console.log("✅ No invalid records found.");
+        return;
+      }
+
+      console.log(`🚮 Found ${toDelete.length} records to delete...`);
+
+      toDelete.forEach(key => {
+        fetch(`${dbUrl.replace(".json", "")}/${key}.json`, {
+          method: "DELETE"
+        })
+        .then(() => console.log(`✅ Deleted: ${key}`))
+        .catch(err => console.error(`❌ Failed to delete ${key}:`, err));
+      });
+    })
+    .catch(err => console.error("❌ Fetch error:", err));
+})();
+    
     const firebaseConfig = {
       apiKey: "AIzaSyCmUpNSNZCumWTP4rVolqnOh3aSRtqra6I",
       authDomain: "smart-monitoring-water-quality.firebaseapp.com",
@@ -522,48 +564,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
    document.getElementById("modeToggle").addEventListener("click", function () {
   document.body.classList.toggle("dark-mode");
-
-  // Auto-clean old or invalid data before loading charts
-(function() {
-  const dbUrl = "https://smart-monitoring-water-quality-default-rtdb.asia-southeast1.firebasedatabase.app/aquaculture.json";
-
-  fetch(dbUrl)
-    .then(res => res.json())
-    .then(data => {
-      if (!data) {
-        console.log("❌ No data found in 'aquaculture'.");
-        return;
-      }
-
-      let toDelete = [];
-
-      Object.keys(data).forEach(key => {
-        const entry = data[key];
-        const startsWith2036 = key.startsWith("2036");
-        const hasZeroValue = entry.do === 0 && entry.ph === 0 && entry.temp === 0;
-
-        if (startsWith2036 || hasZeroValue) {
-          toDelete.push(key);
-        }
-      });
-
-      if (toDelete.length === 0) {
-        console.log("✅ No invalid records found.");
-        return;
-      }
-
-      console.log(`🚮 Found ${toDelete.length} records to delete...`);
-
-      toDelete.forEach(key => {
-        fetch(`${dbUrl.replace(".json", "")}/${key}.json`, {
-          method: "DELETE"
-        })
-        .then(() => console.log(`✅ Deleted: ${key}`))
-        .catch(err => console.error(`❌ Failed to delete ${key}:`, err));
-      });
-    })
-    .catch(err => console.error("❌ Fetch error:", err));
-})();
 
   // Toggle dark/ligth mode logic
   const isDarkMode = document.body.classList.contains("dark-mode");
