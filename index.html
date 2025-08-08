@@ -84,6 +84,74 @@
       display: none;
     }
 
+    .historical-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .historical-controls label {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .historical-controls select {
+    padding: 0.6em 1em;
+    font-size: 1.05em;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .historical-controls select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  }
+
+  .historical-controls button {
+    padding: 0.6em 1em;
+    font-size: 1.05em;
+    border: none;
+    border-radius: 8px;
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .historical-controls button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+  }
+
+  .historical-controls button:active {
+    transform: scale(0.97);
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 600px) {
+    .historical-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .historical-controls select,
+    .historical-controls button {
+      width: 100%;
+    }
+  }
+
     .no-data-status {
       color: var(--alert-color);
       font-weight: bold;
