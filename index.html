@@ -321,9 +321,9 @@
 
     let tempChart, phChart, doChart;
 
-    function getCardBg() {
+    function getFontColor() {
       return getComputedStyle(document.documentElement)
-           .getPropertyValue('--card-bg')
+           .getPropertyValue('--font-color')
            .trim();
     }
 
@@ -335,7 +335,7 @@ function createChart(ctxId, label, data, borderColor) {
   }
 
   const ctx = canvas.getContext("2d");
-  const cardBg = getCardBg();
+  const fontColor = getFontColor();
 
   return new Chart(ctx, {
     type: "line",
@@ -394,17 +394,17 @@ function createChart(ctxId, label, data, borderColor) {
                 size: 16,     // bigger font size
                 weight: "bold" // bold text
             },
-            color: cardBg
+            color: fontColor
           },
            ticks: {
-              color: cardBg, // X-axis labels color
+              color: fontColor, // X-axis labels color
               font: {
               size: 14
       }
     },
     grid: {
-      color: cardBg, // inside lines color
-      borderColor: cardBg // X-axis line color
+      color: fontColor, // inside lines color
+      borderColor: fontColor // X-axis line color
     }
         },
         y: {
