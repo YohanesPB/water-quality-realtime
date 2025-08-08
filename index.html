@@ -386,8 +386,19 @@ function createChart(ctxId, label, data, borderColor) {
             font: {
                 size: 16,     // bigger font size
                 weight: "bold" // bold text
-            }
-          }
+            },
+            color: var(--font-color);
+          },
+           ticks: {
+              color: var(--font-color), // X-axis labels color
+              font: {
+              size: 14
+      }
+    },
+    grid: {
+      color: var(--font-color)", // inside lines color
+      borderColor: var(--font-color) // X-axis line color
+    }
         },
         y: {
           display: true,
