@@ -581,7 +581,7 @@ function populateDropdowns(data) {
 function loadHistoricalCharts() {
   const selectedDate = document.getElementById("dateSelect").value;
   const selectedHour = document.getElementById("hourSelect").value;
-  if (!selectedDate || !selectedHour) return alert("Please select both date and hour.");
+  if (!selectedDate || !selectedHour) return alert("Mohon pilih Tanggal dan Jam.");
 
   dbRef.once("value").then(snapshot => {
     const data = snapshot.val();
@@ -617,7 +617,7 @@ function updateHistoricalChart(chart, labels, data) {
 function exportToXLSX() {
   dbRef.once("value").then(snapshot => {
     const rawData = snapshot.val();
-    if (!rawData) return alert("No data to export!");
+    if (!rawData) return alert("Tidak ada data.");
 
     const exportData = [];
 
