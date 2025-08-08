@@ -321,9 +321,11 @@
 
     let tempChart, phChart, doChart;
 
-    const cardBg = getComputedStyle(document.documentElement)
-                      .getPropertyValue('--card-bg')
-                      .trim();
+    function getCardBg() {
+      return getComputedStyle(document.documentElement)
+           .getPropertyValue('--card-bg')
+           .trim();
+    }
 
 function createChart(ctxId, label, data, borderColor) {
   const canvas = document.getElementById(ctxId);
@@ -333,6 +335,7 @@ function createChart(ctxId, label, data, borderColor) {
   }
 
   const ctx = canvas.getContext("2d");
+  const cardBg = getCardBg();
 
   return new Chart(ctx, {
     type: "line",
