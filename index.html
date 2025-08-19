@@ -259,45 +259,52 @@
 
   <script>
     // Auto-clean old or invalid data before loading charts
+// Auto-clean "aquaculture" and "voltage" folders
 (function() {
-  const dbUrl = "https://smart-monitoring-water-quality-default-rtdb.asia-southeast1.firebasedatabase.app/aquaculture.json";
+  const baseUrl = "https://smart-monitoring-water-quality-default-rtdb.asia-southeast1.firebasedatabase.app";
 
-  fetch(dbUrl)
-    .then(res => res.json())
-    .then(data => {
-      if (!data) {
-        console.log("❌ No data found in 'aquaculture'.");
-        return;
-      }
+  // Cleaning rules per folder
+  const folders = {
+    aquaculture: (key, entry) =>
+      key.startsWith("2036") || (entry.do === 0 && entry.ph === 0 && entry.temp === 0),
+    voltage: (key, entry) =>
+      key.startsWith("2036")
+  };
 
-      let toDelete = [];
+  Object.keys(folders).forEach(folder => {
+    const dbUrl = `${baseUrl}/${folder}.json`;
 
-      Object.keys(data).forEach(key => {
-        const entry = data[key];
-        const startsWith2036 = key.startsWith("2036");
-        const hasZeroValue = entry.do === 0 && entry.ph === 0 && entry.temp === 0;
-
-        if (startsWith2036 || hasZeroValue) {
-          toDelete.push(key);
+    fetch(dbUrl)
+      .then(res => res.json())
+      .then(data => {
+        if (!data) {
+          console.log(`❌ No data found in '${folder}'.`);
+          return;
         }
-      });
 
-      if (toDelete.length === 0) {
-        console.log("✅ No invalid records found.");
-        return;
-      }
+        const toDelete = [];
 
-      console.log(`🚮 Found ${toDelete.length} records to delete...`);
+        Object.keys(data).forEach(key => {
+          if (folders[folder](key, data[key])) {
+            toDelete.push(key);
+          }
+        });
 
-      toDelete.forEach(key => {
-        fetch(`${dbUrl.replace(".json", "")}/${key}.json`, {
-          method: "DELETE"
-        })
-        .then(() => console.log(`✅ Deleted: ${key}`))
-        .catch(err => console.error(`❌ Failed to delete ${key}:`, err));
-      });
-    })
-    .catch(err => console.error("❌ Fetch error:", err));
+        if (toDelete.length === 0) {
+          console.log(`✅ No invalid records found in '${folder}'.`);
+          return;
+        }
+
+        console.log(`🚮 Found ${toDelete.length} records to delete in '${folder}'...`);
+
+        toDelete.forEach(key => {
+          fetch(`${baseUrl}/${folder}/${key}.json`, { method: "DELETE" })
+            .then(() => console.log(`✅ Deleted from '${folder}': ${key}`))
+            .catch(err => console.error(`❌ Failed to delete ${key} from '${folder}':`, err));
+        });
+      })
+      .catch(err => console.error(`❌ Fetch error in '${folder}':`, err));
+  });
 })();
     
     const firebaseConfig = {
