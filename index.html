@@ -268,7 +268,7 @@
     aquaculture: (key, entry) =>
       key.startsWith("2036") || (entry.do === 0 && entry.ph === 0 && entry.temp === 0),
     voltage: (key, entry) =>
-      key.startsWith("2036") || (entry.doVolt === 0 && entry.phVolt === 0 && entry.tempVolt === 0)
+      key.startsWith("2036") || (entry.doVolt === 0 && entry.phVolt === 0 && entry.tempVolt === 0);
   };
 
   Object.keys(folders).forEach(folder => {
